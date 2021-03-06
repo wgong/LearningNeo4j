@@ -11,22 +11,22 @@ https://neo4j.com/graphacademy/online-training/introduction-to-neo4j/part-7/
 1. [Graph Database Fundamentals](#graph-database-fundamentals)
 2. [Neo4J](#neo4j)
     * [Query Language Cypher](#cypher)
-        * [Part one](#part-one)
-        * [Part two](#part-two)
-        * [Part three](#part-three)
-        * [Part four](#part-four)
-        * [Part five](#part-five)
-        * [Part six](#part-six)
-        * [Part seven](#part-seven)
-        * [Part eight](#part-eight)
-        * [Part nine](#part-nine)
-        * [Part ten](#part-ten)
-        * [Part eleven](#part-eleven)
-        * [Part twelve](#part-twelve)
-        * [Part thirteen](#part-thirteen)
-        * [Part fourteen](#part-fourteen)
-        * [Part fiveteen](#part-fiveteen)
-        * [Part sixteen](#part-sixteen)
+        * [Part one - MATCH](#part-one)
+        * [Part two - Property, alias](#part-two)
+        * [Part three - Relationship](#part-three)
+        * [Part four - WHERE](#part-four)
+        * [Part five - Multiple MATCH](#part-five)
+        * [Part six - De-dup](#part-six)
+        * [Part seven - LIST, UNWIND](#part-seven)
+        * [Part eight - CREATE Node](#part-eight)
+        * [Part nine - CREATE Relationship](#part-nine)
+        * [Part ten - DELETE](#part-ten)
+        * [Part eleven - MERGE](#part-eleven)
+        * [Part twelve - Parameter](#part-twelve)
+        * [Part thirteen - EXPLAIN, PROFILE](#part-thirteen)
+        * [Part fourteen - CONSTRAINT](#part-fourteen)
+        * [Part fifteen - INDEX](#part-fiveteen)
+        * [Part sixteen - Load Data](#part-sixteen)
         * [Example](#example---simple-graph)
         * [Application - Movies](#application---movie-graph)
         * [Application - Northwind](#application---northwind-graph)
@@ -88,7 +88,7 @@ Unlike the other databases, relationships take first priority in graph databases
 
 By assembling the simple abstractions of nodes and relationships into connected structures, graph databases enable us to build sophisticated models that map closely to out problem domain.
 
-Many applications' data is modeled as relational data, indeed there are some similarities between a relational model nad a graph model:
+Many applications' data is modeled as relational data, indeed there are some similarities between a relational model and a graph model:
 
 |Relational|Graph|
 |----|----|
@@ -143,7 +143,7 @@ Some definitions:
 
 * ACID
 
-    Transactionality is very important for robust applications that require an atomicity, consistency, isolation, and durability guarantees for their data. If a relationship between nodes is created, not only is the relationship created, but the nodes are updated as connected.
+    Transactionality is very important for robust applications that require an atomicity (A), consistency (C), isolation (I), and durability (D) guarantees for their data. If a relationship between nodes is created, not only is the relationship created, but the nodes are updated as connected.
     All of these updates to the database must all succeed or fail.
 
     ![Neo4j ACID](resources/neo4jACID.PNG)
@@ -241,7 +241,7 @@ Later on the cypher keywords are upper-case, this is a coding convention and is 
 
 --------------------
 
-### Part one
+### Part one - MATCH
 
 #### Comments
 
@@ -260,7 +260,7 @@ Null represents missing or undefined values. You do not store a null value in a 
 
 The most widely used Cypher clause is **MATCH**, this performs a pattern match against the data in the graph. During the query processing, the graph engine traverses the graph to find all nodes that match the graph pattern.
 
-A query with match need to be present with the **RETURN** clause. This clause must be the last of a query to the graph. Here some examples:
+A query with match needs to be present with the **RETURN** clause. This clause must be the last of a query to the graph. Here some examples:
 
 ```Cypher
 // returns all nodes in the graph
@@ -326,7 +326,8 @@ RETURN n
 Exercise 1.2 Examine the schema of your database
 
 ```Cypher
-CALL db.schema()
+CALL db.schema()                    // 3.x
+CALL db.schema.visualization()      // 4.x
 ```
 
 ![1.2](resources/partOneExercise_1_2.PNG)
@@ -351,7 +352,7 @@ RETURN m
 
 --------------------
 
-### Part two
+### Part two - Property, alias
 
 #### Properties
 
@@ -485,7 +486,7 @@ RETURN m.title AS `Movie title`, m.released AS `Released date`, m.tagline AS `Ta
 
 --------------------
 
-### Part three
+### Part three - Relationship
 
 #### Relationships
 
@@ -657,7 +658,7 @@ RETURN m.title, acted.roles
 
 --------------------
 
-### Part four
+### Part four - Where
 
 #### Where
 
@@ -933,7 +934,7 @@ RETURN mov.title, rel.roles
 
 --------------------
 
-### Part five
+### Part five - Multiple MATCH
 
 #### Multiple Match patterns
 
@@ -1041,7 +1042,7 @@ Cypher has a built-in function `collect()` that enables you to aggregate value i
 ```Cypher
 MATCH (p:Person)-[:ACTED_IN]->(m:Movie)
 WHERE p.name = 'Tom Cruise'
-RETURN collect(m.title) AS `movies for Tom Cruise`
+RETURN collect(m.title) AS `movies played by Tom Cruise`
 ```
 
 And the result will be a list called **movies for Tom Cruise** with the values ["Jerry Maguire", "Top Gun", "A Few Good Men"].
@@ -1208,7 +1209,7 @@ RETURN title, listRev AS `reviewer`
 
 --------------------
 
-### Part six
+### Part six - De-dup
 
 #### Eliminating duplication
 
@@ -1339,7 +1340,7 @@ RETURN act.name, movies
 
 --------------------
 
-### Part Seven
+### Part seven - List, unwind
 
 #### List
 
@@ -1443,7 +1444,7 @@ ORDER BY yearsAgo
 
 --------------------
 
-### Part Eight
+### Part eight - Create
 
 #### Create
 
@@ -1793,7 +1794,7 @@ RETURN rob
 
 --------------------
 
-### Part Nine
+### Part nine - CREATE relationship
 
 #### Creating relationships
 
@@ -2016,7 +2017,7 @@ RETURN p, m
 
 --------------------
 
-### Part Ten
+### Part ten - DELETE
 
 #### Deleting nodes and relationships
 
@@ -2124,7 +2125,7 @@ RETURN movie, rel, pers
 
 --------------------
 
-### Part Eleven
+### Part eleven - MERGE
 
 #### Merge
 
@@ -2363,7 +2364,7 @@ RETURN pers, m
 
 --------------------
 
-### Part Twelve
+### Part twelve - Parameter
 
 In a deployed application, it's not necessary to hard code the Cypher statements. In this case we are going to use a variety of values to test, but we don't want to chenge every time the values of test.
 In addition, typically we include Cypher statements in an application where parameters are passed in the Cypher statement before it executes.
@@ -2502,7 +2503,7 @@ Exercise 12.7: Modify the ratingValue parameter to be a different value, 60, and
 
 --------------------
 
-### Part Thirteen
+### Part thirteen - EXPLAIN, PROFILE
 
 #### Explain Profile
 
@@ -2663,7 +2664,7 @@ Double click in the minus button.
 
 --------------------
 
-#### Part Fourteen
+#### Part fourteen - CONSTRAINT
 
 #### Managing constraints and node keys
 
@@ -2836,7 +2837,7 @@ DROP CONSTRAINT ON ()-[ acted_in:ACTED_IN ]-() ASSERT exists(acted_in.roles)
 
 --------------------
 
-### Part Fiveteen
+### Part fifteen - INDEX
 
 #### Managing indexes
 
@@ -2939,7 +2940,7 @@ DROP INDEX ON :Person(born)
 
 --------------------
 
-### Part Sixteen
+### Part sixteen - Load Data
 
 #### From relational to graph
 
